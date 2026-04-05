@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?           // Google profile photo or null for credentials users
+  passwordHash  String?           // null for Google users
+  theme         String    @default("light")
+  creditsUsed   Int       @default(0)
+  creditsTotal  Int       @default(25)
+  creditsReset  DateTime  @default(now())
+  isOnline      Boolean   @default(false)
+  lastSeen      DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts     Account[]
+  participants ConversationParticipant[]
+  sentMessages Message[]
+  uploads      Upload[]
+}
+
+// Required by @auth/prisma-adapter for OAuth account linking
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// ─── Conversations ─────────────────────────────────────────────────────────────
+
+model Conversation {
+  id            String    @id @default(cuid())
+  lastMessage   String?
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  isArchived     Boolean  @default(false)
+  isMuted        Boolean  @default(false)
+  unreadCount    Int      @default(0)
+  joinedAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
+
+// ─── Messages ──────────────────────────────────────────────────────────────────
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  senderId       String
+  text           String?
+  type           MessageType @default(TEXT)
+  readBy         String[]    // array of userIds who have read this message
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id])
+  uploads      Upload[]
+}
+
+// ─── File Uploads ──────────────────────────────────────────────────────────────
+// Files are stored on disk at /public/uploads/[type]/[filename]
+// Only the relative public URL is stored here (e.g. /uploads/images/uuid.jpg)
+
+model Upload {
+  id           String     @id @default(cuid())
+  messageId    String?
+  userId       String
+  filename     String     // stored filename on disk, e.g. "a1b2c3.jpg"
+  originalName String     // original upload filename, e.g. "screenshot.jpg"
+  mimeType     String     // e.g. "image/jpeg", "application/pdf"
+  size         Int        // bytes
+  url          String     // public URL, e.g. "/uploads/images/a1b2c3.jpg"
+  uploadType   UploadType
+  linkUrl      String?    // only set when type = LINK (the external URL shared)
+  linkTitle    String?    // og:title or the URL itself
+  createdAt    DateTime   @default(now())
+
+  message Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  user    User     @relation(fields: [userId], references: [id])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  DOCUMENT
+  LINK
+}
+
+enum UploadType {
+  IMAGE
+  DOCUMENT
+  LINK
+}

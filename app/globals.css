@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --accent-light-bg:  #effdf4;
+  --app-bg:           #f3f3ed;
+  --sidebar-bg:       #f3f3ed;
+  --panel-bg:         #ffffff;
+  --panel-border:     #f0f0ea;
+  --chat-bg:          #f3f3ed;
+  --input-bg:         #f9fafb;
+  --input-border:     #f0f0ea;
+  --text-primary:     #111827;
+  --text-secondary:   #6b7280;
+  --text-muted:       #9ca3af;
+  --bubble-me:        var(--accent-light-bg);
+  --bubble-me-text:   #1a4a35;
+  --bubble-them:      #ffffff;
+  --bubble-them-text: #111827;
+  --separator:        #f0f0ea;
+  --hover-bg:         #eaeae4;
+  --selected-bg:      #f3f3ed;
+  --active-bg:        #2D9B83;
+  --scrollbar-thumb:  #d1d5db;
+  --nav-active-bg:    var(--accent-light-bg);
+  --nav-active-color: #1a6b58;
+  --nav-active-border:#2D9B83;
+  --icon-color:       #1a1a1a;
+}
+
+html.dark {
+  --app-bg:           #0f172a;
+  --sidebar-bg:       #0f172a;
+  --panel-bg:         #1e293b;
+  --panel-border:     #334155;
+  --chat-bg:          #0f172a;
+
+  --input-bg:         #334155;
+  --input-border:     #475569;
+  --text-primary:     #f1f5f9;
+  --text-secondary:   #94a3b8;
+  --text-muted:       #64748b;
+  --bubble-me:        #1a3d2e;
+  --bubble-me-text:   #a7f3d0;
+  --bubble-them:      #1e293b;
+  --bubble-them-text: #f1f5f9;
+  --separator:        #334155;
+  --hover-bg:         #263348;
+  --selected-bg:      #1e2d42;
+  --active-bg:        #2D9B83;
+  --scrollbar-thumb:  #475569;
+  --nav-active-bg:    #1a3a30;
+  --nav-active-color: #4db89a;
+  --nav-active-border:#2D9B83;
+  --icon-color:       #e2e8f0;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--app-bg);
+  overflow: hidden;
+  transition: background 0.2s ease;
+}
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+.app-bg        { background: var(--app-bg) !important; }
+.sidebar-bg    { background: var(--sidebar-bg) !important; }
+.panel-bg      { background: var(--panel-bg) !important; }
+.chat-bg       { background: var(--chat-bg) !important; }
+.input-bg      { background: var(--input-bg) !important; border-color: var(--input-border) !important; }
+.panel-border  { border-color: var(--panel-border) !important; }
+.text-primary  { color: var(--text-primary) !important; }
+.text-secondary{ color: var(--text-secondary) !important; }
+.text-muted    { color: var(--text-muted) !important; }
+.hover-bg:hover{ background: var(--hover-bg) !important; }
+.separator     { border-color: var(--separator) !important; }
+
+/* ── Conversation list item ─────────────────────────────────────────────────── */
+.conv-item {
+  color: var(--text-primary);
+}
+.conv-item:hover {
+  background: var(--selected-bg);
+}
+.conv-item.active {
+  background: var(--selected-bg);
+  color: var(--text-primary);
+}
+
+/* ── Message bubbles ────────────────────────────────────────────────────────── */
+.bubble-me {
+  background: var(--bubble-me) !important;
+  color: var(--bubble-me-text) !important;
+}
+.bubble-them {
+  background: var(--bubble-them) !important;
+  color: var(--bubble-them-text) !important;
+}
+
+/* ── Input fields ───────────────────────────────────────────────────────────── */
+.themed-input {
+  background: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary) !important;
+}
+.themed-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* ── Panels / cards ─────────────────────────────────────────────────────────── */
+.themed-panel {
+  background: var(--panel-bg) !important;
+  border-color: var(--panel-border) !important;
+  color: var(--text-primary) !important;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* ── Custom scrollbar ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+input:focus, textarea:focus { outline: none; }
+
+/* ── Icon buttons ───────────────────────────────────────────────────────────── */
+.icon-btn:hover {
+  background: var(--hover-bg) !important;
+}
